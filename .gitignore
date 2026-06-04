@@ -1,0 +1,16 @@
+# Build output
+target/
+
+# Databases (IMPORTANT - do not track)
+bookingsystemDB/
+carRentalDB/
+*.lck
+*.log
+derby.log
+
+# NetBeans
+nbactions.xml
+
+# OS files
+.DS_Store
+Thumbs.db

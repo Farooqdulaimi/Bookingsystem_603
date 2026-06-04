@@ -9,5 +9,7 @@ public class DatabaseInitializer {
         // just ensure DB exists and DAO works
 
         System.out.println("Database initialized successfully.");
+        
     }
+    
 }

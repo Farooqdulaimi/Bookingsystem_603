@@ -121,56 +121,63 @@ public class BookingListPanel extends JPanel {
         }
     }
 
-    private void createBooking() {
-        try {
-            if (carCombo.getSelectedItem() == null) {
-                JOptionPane.showMessageDialog(this, "Please select a car");
-                return;
-            }
+   private void createBooking() {
+    try {
 
-            LocalDate start = LocalDate.parse(startField.getText().trim());
-            LocalDate end = LocalDate.parse(endField.getText().trim());
-
-            if (!end.isAfter(start)) {
-                JOptionPane.showMessageDialog(this, "End date must be after start date");
-                return;
-            }
-
-            int carId = Integer.parseInt(carCombo.getSelectedItem().toString().split(" - ")[0]);
-
-            long days = java.time.temporal.ChronoUnit.DAYS.between(start, end);
-            double price = carService.getCarById(carId).getPricePerDay() * days;
-
-            Booking booking = new Booking(
-                    0,
-                    carId,
-                    loggedInUser.getId(),
-                    Date.valueOf(start),
-                    Date.valueOf(end),
-                    price,
-                    "ACTIVE"
+        if (startField.getText().trim().isEmpty() || endField.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please enter both start and end dates",
+                    "Validation Error",
+                    JOptionPane.WARNING_MESSAGE
             );
-
-            bookingService.addBooking(booking);
-
-            Car car = carService.getCarById(carId);
-            car.setAvailable(false);
-            carService.updateCar(car);
-
-            JOptionPane.showMessageDialog(this, "Booking created successfully!");
-
-            loadCars();
-
-            // refresh parent dashboard safely
-            SwingUtilities.invokeLater(() -> {
-                java.awt.Window w = SwingUtilities.getWindowAncestor(this);
-                if (w instanceof CustomerMainFrame) {
-                    ((CustomerMainFrame) w).refreshCustomerBookings();
-                }
-            });
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Invalid input: " + ex.getMessage());
+            return;
         }
+
+        // ✅ ONLY ONE carId (keep this one)
+        int carId = Integer.parseInt(
+                carCombo.getSelectedItem().toString().split(" - ")[0]
+        );
+
+        LocalDate start = LocalDate.parse(startField.getText().trim());
+        LocalDate end = LocalDate.parse(endField.getText().trim());
+
+        if (!end.isAfter(start)) {
+            JOptionPane.showMessageDialog(this, "End date must be after start date");
+            return;
+        }
+
+        long days = java.time.temporal.ChronoUnit.DAYS.between(start, end);
+        double price = carService.getCarById(carId).getPricePerDay() * days;
+
+        Booking booking = new Booking(
+                0,
+                carId,
+                loggedInUser.getId(),
+                Date.valueOf(start),
+                Date.valueOf(end),
+                price,
+                "ACTIVE"
+        );
+
+        bookingService.addBooking(booking);
+
+        Car car = carService.getCarById(carId);
+        car.setAvailable(false);
+        carService.updateCar(car);
+
+        JOptionPane.showMessageDialog(this, "Booking created successfully!");
+
+        loadCars();
+
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(
+                this,
+                "Unable to create booking. Please check your inputs.",
+                "Booking Error",
+                JOptionPane.ERROR_MESSAGE
+        );
     }
+   }
 }
+    

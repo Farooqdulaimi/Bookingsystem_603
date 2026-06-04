@@ -14,3 +14,6 @@ nbactions.xml
 # OS files
 .DS_Store
 Thumbs.db
+
+src/main/resources/icons/*.exe
+*.exe
